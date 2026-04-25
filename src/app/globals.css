@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen bg-gradient-to-b from-white to-neutral-50 text-neutral-900 font-sans antialiased;
+  }
+
+  body.theme-dark {
+    @apply bg-gradient-to-b from-neutral-900 to-neutral-800 text-neutral-50;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-neutral-200 bg-white/80 backdrop-blur shadow-glass transition-all duration-300;
+  }
+
+  .glass-card.dark {
+    @apply border-neutral-700 bg-neutral-800/40;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors duration-200 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2 rounded-lg border border-neutral-300 bg-white text-neutral-900 font-medium hover:bg-neutral-50 transition-colors duration-200;
+  }
+
+  .btn-secondary.dark {
+    @apply border-neutral-700 bg-neutral-800 text-neutral-100 hover:bg-neutral-700;
+  }
+
+  .badge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-700;
+  }
+
+  .badge-accent {
+    @apply badge bg-accent-100 text-accent-700;
+  }
+
+  .container-wrapper {
+    @apply w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Smooth animations */
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}

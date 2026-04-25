@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  passwordHash   String
+  role           String    @default("CLIENT")
+  emailVerified  Boolean   @default(false)
+  phoneVerified  Boolean   @default(false)
+  idVerified     Boolean   @default(false)
+  profileViews   Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Profile
+  freelancerProfile FreelancerProfile?
+  
+  // Relations
+  jobsPosted     Job[]     @relation("ClientJobs")
+  applications   Application[]
+  messagesSent   Message[] @relation("Sender")
+  messagesReceived Message[] @relation("Receiver")
+  reviewsGiven   Review[]  @relation("ReviewerUser")
+  reviewsReceived Review[] @relation("RevieweeUser")
+  savedJobs      SavedJob[]
+  notifications  Notification[]
+  disputesInitiated Dispute[] @relation("InitiatorUser")
+  disputesAgainstMe Dispute[] @relation("RespondentUser")
+}
+
+model FreelancerProfile {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      String    @default("TECHNICAL")
+  skills        String    @default("[]") // JSON array as string
+  portfolioUrl  String?
+  bio           String?
+  hourlyRate    Float?
+  isSuspicious  Boolean   @default(false)
+  riskScore     Int       @default(0) // 0-100 score from AI detection
+  detectionReasons String @default("[]") // JSON array of detection reasons
+  flaggedFields String    @default("[]") // JSON array of flagged field names
+  rating        Float     @default(0)
+  reviewCount   Int       @default(0)
+  completedJobs Int       @default(0)
+  totalEarnings Float     @default(0)
+  responseTime  Int       @default(0) // in hours
+  lastScannedAt DateTime? // When profile was last scanned by AI
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Job {
+  id               String    @id @default(cuid())
+  clientId         String
+  client           User      @relation("ClientJobs", fields: [clientId], references: [id])
+  title            String
+  description      String
+  budget           Float
+  deadline         DateTime?
+  status           String    @default("OPEN") // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
+  requiredSkills   String    @default("[]") // JSON array as string
+  category         String?
+  selectedFreelancerId String?
+  views            Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  applications     Application[]
+  savedByUsers     SavedJob[]
+}
+
+model Application {
+  id           String    @id @default(cuid())
+  jobId        String
+  job          Job       @relation(fields: [jobId], references: [id])
+  freelancerId String
+  freelancer   User      @relation(fields: [freelancerId], references: [id])
+  coverLetter  String?
+  proposedRate Float?
+  status       String    @default("PENDING")
+  createdAt    DateTime  @default(now())
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  jobId      String?
+  content    String
+  createdAt  DateTime @default(now())
+}
+
+// ========== NEW MODELS FOR ADDITIONAL FEATURES ==========
+
+model Review {
+  id           String    @id @default(cuid())
+  jobId        String?
+  reviewerId   String
+  reviewer     User      @relation("ReviewerUser", fields: [reviewerId], references: [id])
+  revieweeId   String
+  reviewee     User      @relation("RevieweeUser", fields: [revieweeId], references: [id])
+  rating       Int       // 1-5 stars
+  title        String?
+  comment      String?
+  isAnonymous  Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, jobId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // MESSAGE, APPLICATION, REVIEW, JOB_COMPLETE, etc
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Dispute {
+  id              String   @id @default(cuid())
+  jobId           String?
+  initiatorId     String
+  initiator       User     @relation("InitiatorUser", fields: [initiatorId], references: [id])
+  respondentId    String
+  respondent      User     @relation("RespondentUser", fields: [respondentId], references: [id])
+  title           String
+  description     String
+  status          String   @default("OPEN") // OPEN, IN_REVIEW, RESOLVED, CLOSED
+  resolution      String?
+  adminNotes      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  userId    String
+  email     String
+  type      String   // WELCOME, MESSAGE_ALERT, DIGEST, etc
+  subject   String
+  status    String   @default("SENT")
+  sentAt    DateTime @default(now())
+}
+
+model AnalyticsData {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  totalEarnings Float    @default(0)
+  jobsCompleted Int      @default(0)
+  avgRating     Float    @default(0)
+  responseRate  Float    @default(0)
+  onTimeRate    Float    @default(0)
+  lastUpdated   DateTime @updatedAt
+}

@@ -1,0 +1,228 @@
+.container {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 6rem);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+.glassContainer {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1000px;
+  height: 80vh;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar {
+  width: 320px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.sidebarHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebarTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.messageList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.messageList::-webkit-scrollbar {
+  width: 6px;
+}
+.messageList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.messageItem {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.messageItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.activeItem {
+  background: rgba(99, 102, 241, 0.15);
+  border-left: 4px solid #f09433;
+}
+
+.unreadItem .sender {
+  font-weight: 700;
+  color: #fff;
+}
+
+.unreadItem .preview {
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.sender {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.time {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.preview {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.1);
+}
+
+.chatContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chatHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.2);
+}
+
+.chatHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.messageRow {
+  display: flex;
+}
+
+.messageBubbleReceived {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem 1.25rem;
+  border-radius: 0 16px 16px 16px;
+  max-width: 75%;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.replyForm {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.replyInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  padding: 0.8rem 1.25rem;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.replyInput:focus {
+  border-color: #f09433;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sendBtn {
+  background: #f09433;
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 0 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sendBtn:hover {
+  background: #cc2366;
+  transform: translateY(-1px);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748b;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.emptyState p {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+
+

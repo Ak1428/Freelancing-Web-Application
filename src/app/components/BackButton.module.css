@@ -1,0 +1,24 @@
+.backButton {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2937;
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.backButton:active {
+  transform: translateY(1px);
+}
