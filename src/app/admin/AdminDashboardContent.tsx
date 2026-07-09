@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, Badge } from '@/components/ui';
+import { useState } from 'react';
+import { Badge } from '@/components/ui';
+import ScanProfilesButton from '@/components/ScanProfilesButton';
 
 interface Profile {
   id: string;

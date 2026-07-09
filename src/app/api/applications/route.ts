@@ -14,8 +14,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { jobId, coverLetter, proposedRate } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return NextResponse.json(
+        { message: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+
+    const { jobId, coverLetter, proposedRate } = body;
+    
+    console.log('Application POST request:', { jobId, coverLetter, proposedRate, userId: (session.user as any).id });
+    
+    // Validate jobId
+    if (!jobId || typeof jobId !== 'string') {
+      console.error('Invalid jobId:', jobId);
+      return NextResponse.json(
+        { message: `Invalid job ID provided: received ${typeof jobId}` },
+        { status: 400 }
+      );
+    }
+
     const freelancerId = (session.user as any).id;
+    
+    // Validate freelancerId
+    if (!freelancerId) {
+      console.error('No freelancerId in session:', session.user);
+      return NextResponse.json(
+        { message: 'User ID not found in session' },
+        { status: 401 }
+      );
+    }
 
     // Check if job exists
     const job = await prisma.job.findUnique({
@@ -116,14 +148,31 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' }
       });
     } else {
-      // Get applications by current user (freelancer)
-      applications = await prisma.application.findMany({
-        where: { freelancerId: userId },
-        include: {
-          job: { select: { id: true, title: true, budget: true, status: true } }
-        },
-        orderBy: { createdAt: 'desc' }
-      });
+      // Check if user is a client or freelancer
+      const userRole = (session.user as any).role;
+      
+      if (userRole === 'CLIENT') {
+        // Get all applications for this client's posted jobs
+        applications = await prisma.application.findMany({
+          where: {
+            job: { clientId: userId }
+          },
+          include: {
+            freelancer: { select: { id: true, name: true, email: true } },
+            job: { select: { id: true, title: true, budget: true } }
+          },
+          orderBy: { createdAt: 'desc' }
+        });
+      } else {
+        // Get applications by current user (freelancer)
+        applications = await prisma.application.findMany({
+          where: { freelancerId: userId },
+          include: {
+            job: { select: { id: true, title: true, budget: true, status: true } }
+          },
+          orderBy: { createdAt: 'desc' }
+        });
+      }
     }
 
     return NextResponse.json({

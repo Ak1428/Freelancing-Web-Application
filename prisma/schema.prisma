@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -34,6 +34,10 @@ model User {
   notifications  Notification[]
   disputesInitiated Dispute[] @relation("InitiatorUser")
   disputesAgainstMe Dispute[] @relation("RespondentUser")
+  portfolioProjects PortfolioProject[] @relation("PortfolioProjects")
+  clientMatchingPrefs ClientMatchingPreference? @relation("ClientMatchingPrefs")
+  freelancerMatches MatchingResult[] @relation("FreelancerMatches")
+  jobSuggestions JobSuggestion[] @relation("JobSuggestions")
 }
 
 model FreelancerProfile {
@@ -77,6 +81,8 @@ model Job {
 
   applications     Application[]
   savedByUsers     SavedJob[]
+  matchingResults  MatchingResult[]
+  freelancerSuggestions FreelancerSuggestion[] @relation("FreelancerSuggestions")
 }
 
 model Application {
@@ -177,4 +183,75 @@ model AnalyticsData {
   responseRate  Float    @default(0)
   onTimeRate    Float    @default(0)
   lastUpdated   DateTime @updatedAt
+}
+
+// ========== PORTFOLIO & MATCHING MODELS ==========
+
+model PortfolioProject {
+  id                String    @id @default(cuid())
+  freelancerId      String
+  freelancer        User      @relation("PortfolioProjects", fields: [freelancerId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  technologies      String    @default("[]") // JSON array of tech used
+  imageUrl          String?
+  projectUrl        String?
+  completionDate    DateTime?
+  budget            Float?
+  duration          String? // "3 months", "2 weeks" etc
+  clientFeedback    String?
+  isAiGenerated     Boolean   @default(false) // AI detection result
+  aiDetectionScore  Int       @default(0) // 0-100
+  aiDetectionReasons String  @default("[]") // JSON array of detection reasons
+  verificationStatus String   @default("UNVERIFIED") // UNVERIFIED, VERIFIED, FLAGGED
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model ClientMatchingPreference {
+  id                String    @id @default(cuid())
+  clientId          String    @unique
+  client            User      @relation("ClientMatchingPrefs", fields: [clientId], references: [id], onDelete: Cascade)
+  skillWeightage    Float     @default(0.5) // 0-1
+  performanceWeightage Float @default(0.3) // 0-1
+  responsivenessWeightage Float @default(0.2) // 0-1
+  minimumRating     Float     @default(3.5)
+  minimumCompletedJobs Int    @default(0)
+  preferredCategories String  @default("[]") // JSON array
+  excludeFlags      Boolean   @default(true) // Exclude flagged profiles
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model MatchingResult {
+  id                String    @id @default(cuid())
+  jobId             String
+  job               Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  freelancerId      String
+  freelancer        User      @relation("FreelancerMatches", fields: [freelancerId], references: [id], onDelete: Cascade)
+  matchScore        Float     // 0-100
+  skillSimilarity   Float     // Simvec score
+  performanceScore  Float     // Scorehist score
+  responsiveness    Float     // Rateresp score
+  matchDetails      String    // JSON with matching factors
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model FreelancerSuggestion {
+  id                String    @id @default(cuid())
+  jobId             String
+  job               Job       @relation("FreelancerSuggestions", fields: [jobId], references: [id], onDelete: Cascade)
+  suggestedFreelancers String  // JSON array of freelancer objects with scores
+  generatedAt       DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model JobSuggestion {
+  id                String    @id @default(cuid())
+  freelancerId      String
+  freelancer        User      @relation("JobSuggestions", fields: [freelancerId], references: [id], onDelete: Cascade)
+  suggestedJobs     String    // JSON array of job objects with scores
+  generatedAt       DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }

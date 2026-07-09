@@ -19,9 +19,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const profile = profileId
+      ? await prisma.freelancerProfile.findUnique({
+          where: { id: profileId },
+          include: { user: true }
+        })
+      : userId
+        ? await prisma.freelancerProfile.findFirst({
+            where: { userId },
+            include: { user: true }
+          })
+        : null;
+
+    const profileName = name ?? profile?.user?.name ?? 'Unknown';
+
     // Run AI analysis
     const analysisResult = await analyzeProfileAuthenticity({
-      name,
+      name: profileName,
       bio,
       skills: skills ? (typeof skills === 'string' ? JSON.parse(skills) : skills) : [],
       hourlyRate,
@@ -84,7 +98,8 @@ export async function GET(req: NextRequest) {
 
     // Fetch the profile
     const profile = await prisma.freelancerProfile.findUnique({
-      where: { userId }
+      where: { userId },
+      include: { user: true }
     });
 
     if (!profile) {

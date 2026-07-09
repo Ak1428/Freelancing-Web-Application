@@ -2,23 +2,35 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Run the database migration and seed demo data:
+
+```bash
+npx prisma migrate dev
+npm run seed
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo accounts
+- Admin: admin@example.com / admin123
+- Client: client@example.com / client123
+- Freelancer: freelancer@example.com / freelancer123
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Notes
+- The demo seed creates sample users, profiles, jobs, and applications so the dashboard and marketplace are immediately usable.
+- If you already have data in the local database and want a clean reset, remove the SQLite file and run the migration again.
 
 ## Learn More
 

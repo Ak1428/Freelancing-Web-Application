@@ -9,15 +9,23 @@ type Props = {
 };
 
 async function getJob(jobId: string) {
-  const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/jobs/${jobId}`, {
-    cache: 'no-store',
-  });
+  try {
+    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/jobs/${jobId}`, {
+      cache: 'no-store',
+    });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      console.error(`Failed to fetch job: ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json();
+    console.log('Job fetched:', { success: data.success, jobId: data.job?.id });
+    return data.job || null;
+  } catch (error) {
+    console.error('Error fetching job:', error);
     return null;
   }
-
-  return res.json();
 }
 
 export default async function JobDetailPage({ params }: Props) {

@@ -153,7 +153,7 @@ export default function FreelancerList() {
                             </Button>
                           </a>
                         )}
-                        <Link href={`/freelancer/${freelancer.id}`} className="flex-1">
+                        <Link href={`/freelancer/${freelancer.user?.id || freelancer.userId}`} className="flex-1">
                           <Button variant="primary" size="sm" fullWidth>
                             View Profile
                           </Button>

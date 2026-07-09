@@ -40,7 +40,7 @@ function LogInForm() {
       setError('Invalid email or password');
     } else {
       const session = await getSession();
-      const role = session?.user?.role?.toUpperCase();
+      const role = (session?.user as { role?: string } | undefined)?.role?.toUpperCase();
       if (role === 'FREELANCER') {
         router.push('/freelancer/profile');
       } else if (role === 'CLIENT') {

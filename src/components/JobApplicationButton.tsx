@@ -9,6 +9,16 @@ interface JobApplicationButtonProps {
 }
 
 export default function JobApplicationButton({ jobId, jobTitle }: JobApplicationButtonProps) {
+  // Validate jobId
+  if (!jobId || typeof jobId !== 'string') {
+    console.error('Invalid jobId prop:', jobId);
+    return (
+      <Button variant="secondary" size="lg" fullWidth disabled>
+        Invalid Job ID
+      </Button>
+    );
+  }
+
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,18 +31,25 @@ export default function JobApplicationButton({ jobId, jobTitle }: JobApplication
     setError(null);
     setIsLoading(true);
 
+    console.log('Submitting application with jobId:', jobId, { coverLetter, proposedRate });
+
     try {
+      const payload = {
+        jobId,
+        coverLetter: coverLetter || null,
+        proposedRate: proposedRate ? parseFloat(proposedRate) : null,
+      };
+      
+      console.log('Sending payload:', payload);
+
       const response = await fetch('/api/applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jobId,
-          coverLetter: coverLetter || null,
-          proposedRate: proposedRate ? parseFloat(proposedRate) : null,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+      console.log('Response:', { ok: response.ok, status: response.status, data });
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to apply for job');

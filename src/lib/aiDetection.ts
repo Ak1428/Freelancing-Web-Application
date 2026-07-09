@@ -221,3 +221,228 @@ export async function analyzeAuthenticity(text: string): Promise<{ isSuspicious:
     reason: result.reasons.length > 0 ? result.reasons[0] : 'Profile appears authentic.'
   };
 }
+
+// ========== AI-GENERATED CONTENT DETECTION FOR PORTFOLIO PROJECTS ==========
+
+interface PortfolioAnalysisResult {
+  isAiGenerated: boolean;
+  riskScore: number; // 0-100
+  reasons: string[];
+}
+
+/**
+ * Analyze portfolio project description for AI-generated content indicators
+ */
+function analyzeProjectDescription(description: string): { suspicious: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  const lowerText = description.toLowerCase();
+
+  // Detect overly formal or generic language patterns common in AI outputs
+  const aiPatterns = [
+    { pattern: /^(this\s+(project|solution|application|system)|leveraging|synergize|dynamic)/i, reason: 'Contains generic AI-like opening' },
+    { pattern: /\b(utilize|implement|facilitate|optimize|streamline|maximize|enhance)\b/gi, reason: 'Uses business jargon typical of AI writing' },
+    { pattern: /\b(cutting[\-\s]edge|state[\-\s]of[\-\s]the[\-\s]art|innovative|revolutionary|game[\-\s]changing)\b/gi, reason: 'Overuses marketing terminology' },
+    { pattern: /\b(comprehensive|robust|scalable|efficient|modern)\b/gi, reason: 'Contains overused AI adjectives' }
+  ];
+
+  let aiPatternCount = 0;
+  for (const { pattern, reason } of aiPatterns) {
+    const matches = description.match(pattern) || [];
+    if (matches.length >= 2) {
+      aiPatternCount += 1;
+      if (aiPatternCount > 0 && !reasons.includes(reason)) {
+        reasons.push(reason);
+      }
+    }
+  }
+
+  // Check for perfect grammar (AI indicator - too perfect is suspicious)
+  const grammarScore = checkGrammarPerfection(description);
+  if (grammarScore > 0.95) {
+    reasons.push('Unusually perfect grammar patterns');
+  }
+
+  // Check for consistent formatting and structure (AI indicator)
+  const sentences = description.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  if (sentences.length >= 3) {
+    const avgLength = sentences.reduce((sum, s) => sum + s.split(/\s+/).length, 0) / sentences.length;
+    if (avgLength > 25 && avgLength < 35) {
+      reasons.push('Unusually consistent sentence length patterns');
+    }
+  }
+
+  // Check for lack of personality or specificity
+  if (!hasPersonalReferences(description)) {
+    reasons.push('Lacks personal touches or specific examples');
+  }
+
+  // Check for repetitive structure
+  const structurePattern = detectRepetitiveStructure(description);
+  if (structurePattern > 0.8) {
+    reasons.push('Contains repetitive sentence structures');
+  }
+
+  return {
+    suspicious: reasons.length >= 2, // Need at least 2 indicators
+    reasons
+  };
+}
+
+/**
+ * Calculate grammar perfection score (0-1)
+ * Perfect grammar can be an AI indicator
+ */
+function checkGrammarPerfection(text: string): number {
+  let score = 1;
+
+  // Common informal markers that indicate human writing
+  const informalMarkers = [
+    /\b(like|um|uh|yeah|actually|basically|seriously|definitely|probably|maybe)\b/gi,
+    /\b(don't|can't|won't|isn't|doesn't|haven't)\b/gi, // Contractions
+    /[!]{2,}/, // Multiple exclamation marks
+    /\.\.\./gi, // Ellipsis
+  ];
+
+  for (const pattern of informalMarkers) {
+    if (pattern.test(text)) {
+      score -= 0.15; // Deduct points for informal language
+    }
+  }
+
+  // Check for common typos or variations (human indicator)
+  if (/\b[a-z]{1,3}\b/gi.test(text)) {
+    score -= 0.05; // Deduct for single letter words or abbreviations
+  }
+
+  return Math.max(0, score);
+}
+
+/**
+ * Check if description has personal references (human indicator)
+ */
+function hasPersonalReferences(text: string): boolean {
+  const personalPatterns = [
+    /\b(i|me|we|our|my|my team)\b/i,
+    /\b(learned|discovered|realized|found)\b/i,
+    /\b(challenge|struggled|problem)\b/i,
+    /specific\s+(example|case|instance)/i
+  ];
+
+  return personalPatterns.some(pattern => pattern.test(text));
+}
+
+/**
+ * Detect if text has overly repetitive sentence structure
+ */
+function detectRepetitiveStructure(text: string): number {
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 5);
+  if (sentences.length < 3) return 0;
+
+  // Extract sentence patterns (first few words)
+  const patterns = sentences.map(s => {
+    const words = s.trim().split(/\s+/).slice(0, 3).join(' ').toLowerCase();
+    return words;
+  });
+
+  // Count identical patterns
+  const patternCounts: Record<string, number> = {};
+  patterns.forEach(p => {
+    patternCounts[p] = (patternCounts[p] || 0) + 1;
+  });
+
+  const maxCount = Math.max(...Object.values(patternCounts), 1);
+  return maxCount / sentences.length; // Return ratio of most common pattern
+}
+
+/**
+ * Analyze technologies claimed in project
+ */
+function analyzeTechnologies(technologies: string[]): { suspicious: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+
+  if (technologies.length === 0) {
+    reasons.push('No technologies listed');
+    return { suspicious: true, reasons };
+  }
+
+  // Check for unrealistic tech stacks
+  if (technologies.length > 15) {
+    reasons.push('Claimed expertise in suspiciously many technologies');
+  }
+
+  // Check for mutually exclusive technologies
+  const mutuallyExclusive = [
+    { techs: ['PHP', 'ASP.NET'], reason: 'Mixed backend languages unusually' },
+    { techs: ['React', 'Angular', 'Vue'], reason: 'Claimed expertise in multiple competing frameworks' }
+  ];
+
+  for (const { techs, reason } of mutuallyExclusive) {
+    const count = techs.filter(t => technologies.some(tech => tech.toLowerCase().includes(t.toLowerCase()))).length;
+    if (count >= techs.length) {
+      reasons.push(reason);
+    }
+  }
+
+  return {
+    suspicious: reasons.length > 0,
+    reasons
+  };
+}
+
+/**
+ * Main portfolio project analysis function
+ */
+export async function analyzePortfolioProject(projectData: {
+  title?: string;
+  description?: string;
+  technologies?: string[];
+  clientFeedback?: string;
+}): Promise<PortfolioAnalysisResult> {
+  let riskScore = 0;
+  const reasons: string[] = [];
+
+  // Analyze description
+  if (projectData.description) {
+    const descAnalysis = analyzeProjectDescription(projectData.description);
+    if (descAnalysis.suspicious) {
+      reasons.push(...descAnalysis.reasons);
+      riskScore += descAnalysis.reasons.length * 15;
+    }
+  }
+
+  // Analyze technologies
+  if (projectData.technologies && projectData.technologies.length > 0) {
+    const techAnalysis = analyzeTechnologies(projectData.technologies);
+    if (techAnalysis.suspicious) {
+      reasons.push(...techAnalysis.reasons);
+      riskScore += techAnalysis.reasons.length * 10;
+    }
+  }
+
+  // Analyze client feedback
+  if (projectData.clientFeedback) {
+    const feedbackAnalysis = analyzeProjectDescription(projectData.clientFeedback);
+    if (feedbackAnalysis.suspicious) {
+      reasons.push(`Feedback: ${feedbackAnalysis.reasons[0]}`);
+      riskScore += 20;
+    }
+  }
+
+  // Check for suspicious title patterns
+  if (projectData.title) {
+    const titleAnalysis = analyzeTextContent(projectData.title);
+    if (titleAnalysis.suspicious && titleAnalysis.reasons.length > 2) {
+      reasons.push('Title contains suspicious patterns');
+      riskScore += 15;
+    }
+  }
+
+  riskScore = Math.min(riskScore, 100);
+
+  return {
+    isAiGenerated: riskScore >= 40, // 40+ score indicates likely AI generation
+    riskScore,
+    reasons: [...new Set(reasons)] // Remove duplicates
+  };
+}
+
