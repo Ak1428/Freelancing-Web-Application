@@ -3,8 +3,19 @@
 import { useEffect, useState } from 'react';
 import { Container, Card } from '@/components/ui';
 
+type MessageRecord = {
+  id: string;
+  sender?: { name?: string };
+  senderId?: string;
+  content: string;
+  createdAt: string;
+  jobId?: string | null;
+  unread?: boolean;
+  time?: string;
+};
+
 export default function Messages() {
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<MessageRecord[]>([]);
   const [replyText, setReplyText] = useState('');
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

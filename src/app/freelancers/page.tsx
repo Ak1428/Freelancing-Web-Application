@@ -6,9 +6,22 @@ import Link from 'next/link';
 import { Container, Card, Badge, Button } from '@/components/ui';
 import FlaggedProfileBadge from '@/components/FlaggedProfileBadge';
 
+type FreelancerRecord = {
+  id: string;
+  userId: string;
+  user?: { id?: string; name?: string };
+  isSuspicious?: boolean;
+  riskScore?: number;
+  category?: string;
+  skills?: string | string[];
+  bio?: string;
+  hourlyRate?: number | null;
+  portfolioUrl?: string | null;
+};
+
 export default function FreelancerList() {
   const { data: session } = useSession();
-  const [freelancers, setFreelancers] = useState<any[]>([]);
+  const [freelancers, setFreelancers] = useState<FreelancerRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -40,7 +53,7 @@ export default function FreelancerList() {
             <p className="text-lg text-neutral-600">Find technical and non-technical talent ready to work</p>
           </div>
           {session?.user ? (
-            (session.user as any).role === 'CLIENT' ? (
+            session.user.role === 'CLIENT' ? (
               <Link href="/client/post-job">
                 <Button variant="primary" size="lg">Post a Job</Button>
               </Link>
@@ -79,6 +92,13 @@ export default function FreelancerList() {
                 {freelancers.map((freelancer) => (
                   <Card key={freelancer.id} className="p-6 hover:shadow-lg transition-shadow">
                     <div className="space-y-4">
+                      {(() => {
+                        const skills = Array.isArray(freelancer.skills)
+                          ? freelancer.skills
+                          : JSON.parse(freelancer.skills || '[]') as string[];
+
+                        return (
+                          <>
                       {/* Flagged Badge */}
                       {freelancer.isSuspicious && (
                         <div className="mb-2">
@@ -106,16 +126,16 @@ export default function FreelancerList() {
                       <div>
                         <p className="text-sm font-medium text-neutral-600 mb-2">Skills</p>
                         <div className="flex flex-wrap gap-2">
-                          {JSON.parse(freelancer.skills || '[]')
+                          {skills
                             .slice(0, 3)
                             .map((skill: string) => (
                               <Badge key={skill} variant="primary" className="text-xs">
                                 {skill}
                               </Badge>
                             ))}
-                          {JSON.parse(freelancer.skills || '[]').length > 3 && (
+                          {skills.length > 3 && (
                             <Badge variant="accent" className="text-xs">
-                              +{JSON.parse(freelancer.skills || '[]').length - 3}
+                              +{skills.length - 3}
                             </Badge>
                           )}
                         </div>
@@ -159,6 +179,9 @@ export default function FreelancerList() {
                           </Button>
                         </Link>
                       </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </Card>
                 ))}

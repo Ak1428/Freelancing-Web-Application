@@ -15,10 +15,19 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    let { title, description, budget, requiredSkills, category, deadline } = body;
+    const {
+      title: rawTitle,
+      description: rawDescription,
+      budget,
+      requiredSkills,
+      category,
+      deadline,
+    } = body;
 
     // Validate required fields
-    if (!title || !description || !budget) {
+    const title = String(rawTitle ?? '').trim();
+    const description = String(rawDescription ?? '').trim();
+    if (!rawTitle || !rawDescription || !budget) {
       return NextResponse.json(
         { message: 'Missing required fields: title, description, budget' },
         { status: 400 }
@@ -26,7 +35,6 @@ export async function POST(req: Request) {
     }
 
     // Trim and validate title
-    title = String(title).trim();
     if (title.length < 10 || title.length > 200) {
       return NextResponse.json(
         { message: 'Job title must be between 10 and 200 characters' },
@@ -35,7 +43,6 @@ export async function POST(req: Request) {
     }
 
     // Trim and validate description
-    description = String(description).trim();
     if (description.length < 20 || description.length > 5000) {
       return NextResponse.json(
         { message: 'Job description must be between 20 and 5000 characters' },
@@ -44,7 +51,7 @@ export async function POST(req: Request) {
     }
 
     // Validate budget
-    let parsedBudget = parseFloat(String(budget));
+    const parsedBudget = parseFloat(String(budget));
     if (isNaN(parsedBudget) || parsedBudget <= 0) {
       return NextResponse.json(
         { message: 'Budget must be a positive number' },

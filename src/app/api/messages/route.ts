@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       );
     }
 
-    let sanitizedContent = String(content)
+    const sanitizedContent = String(content)
       .trim()
       .replace(/<[^>]*>/g, '') // Remove HTML tags
       .substring(0, 5000); // Max length 5000 chars

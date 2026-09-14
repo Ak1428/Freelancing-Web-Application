@@ -305,7 +305,7 @@ export async function findMatchingFreelancers(
     });
 
     // Calculate scores for each freelancer
-    const matchedFreelancers: any[] = [];
+    const matchedFreelancers: Array<{ freelancer: typeof freelancers[number]; matchScore: MatchingScore }> = [];
 
     for (const freelancer of freelancers) {
       const score = await calculateMatchScore(jobId, freelancer.userId, clientPreferences);
@@ -363,7 +363,7 @@ export async function findMatchingJobs(
     });
 
     // Calculate scores for each job
-    const matchedJobs: any[] = [];
+    const matchedJobs: Array<{ job: typeof jobs[number]; matchScore: MatchingScore }> = [];
 
     for (const job of jobs) {
       const score = await calculateMatchScore(job.id, freelancerId);

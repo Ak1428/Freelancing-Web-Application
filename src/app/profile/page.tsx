@@ -16,7 +16,7 @@ export default function ProfileRedirect() {
       return;
     }
 
-    const role = (session?.user as any)?.role;
+    const role = session?.user?.role;
     if (role === 'CLIENT') {
       router.replace('/client/profile');
     } else if (role === 'FREELANCER') {

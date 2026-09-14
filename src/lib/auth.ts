@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
@@ -14,8 +14,9 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        const email = String(credentials.email).toLowerCase().trim();
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email },
         });
         if (!user) return null;
 
@@ -34,11 +35,14 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
     async session({ session, token }) {
-      if (session.user && token) {
-        (session.user as any).id = token.id as string;
-        (session.user as any).role = token.role as string;
+      if (session.user) {
+        session.user.id = typeof token.id === 'string' ? token.id : '';
+        session.user.role = typeof token.role === 'string' ? token.role : undefined;
       }
       return session;
     },
@@ -47,7 +51,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = (user as any).role;
+        token.role = user.role ?? null;
       } else if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
@@ -65,5 +69,5 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
 };

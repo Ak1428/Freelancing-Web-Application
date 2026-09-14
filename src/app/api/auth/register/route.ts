@@ -37,10 +37,10 @@ const validatePassword = (password: string): { valid: boolean; errors: string[] 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    let { name, email, password, role } = body;
+    const { name: rawName, email: rawEmail, password, role: rawRole } = body;
 
     // Validate all required fields are present
-    if (!name || !email || !password || !role) {
+    if (!rawName || !rawEmail || !password || !rawRole) {
       return NextResponse.json(
         { message: 'Missing required fields: name, email, password, role' },
         { status: 400 }
@@ -48,9 +48,9 @@ export async function POST(req: Request) {
     }
 
     // Trim and validate inputs
-    name = String(name).trim();
-    email = String(email).toLowerCase().trim();
-    role = String(role).toUpperCase().trim();
+    const name = String(rawName).trim();
+    const email = String(rawEmail).toLowerCase().trim();
+    const role = String(rawRole).toUpperCase().trim();
 
     // Validate name length
     if (name.length < 2 || name.length > 100) {

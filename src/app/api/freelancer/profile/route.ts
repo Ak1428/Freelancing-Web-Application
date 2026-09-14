@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     if (!session || !session.user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    let { category, skills, portfolioUrl, bio, hourlyRate } = body;
+    const { category, skills, portfolioUrl, bio, hourlyRate } = body;
 
     const skillsArray = skills ? skills.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
 

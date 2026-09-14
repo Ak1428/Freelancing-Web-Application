@@ -6,9 +6,19 @@ import AdminDashboardContent from './AdminDashboardContent';
 // Force dynamic rendering to avoid static generation with database queries
 export const dynamic = 'force-dynamic';
 
+type FlaggedProfileRecord = {
+  id: string;
+  userId: string;
+  user: { id: string; name: string | null; email: string | null };
+  category: string;
+  riskScore: number;
+  detectionReasons: string;
+  isSuspicious: boolean;
+};
+
 export default async function AdminDashboard() {
-  let flaggedProfiles: any[] = [];
-  let error = null;
+  let flaggedProfiles: FlaggedProfileRecord[] = [];
+  let error: string | null = null;
 
   try {
     flaggedProfiles = await prisma.freelancerProfile.findMany({

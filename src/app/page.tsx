@@ -3,28 +3,12 @@
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Button, Container, Card } from '@/components/ui';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 
 function HomeContent() {
   const { data: session, status } = useSession();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // During hydration, show loading state
-  if (!mounted) {
-    return (
-      <Container className="py-12">
-        <div className="text-center">
-          <div className="text-3xl">⏳</div>
-          <p className="text-lg text-neutral-600">Loading...</p>
-        </div>
-      </Container>
-    );
-  }
-
   if (status === 'loading') {
     return (
       <Container className="py-12">
@@ -120,7 +104,7 @@ function HomeContent() {
               <div>
                 <div className="font-semibold text-neutral-900">{session.user?.name || 'User'}</div>
                 <div className="text-xs text-neutral-600">
-                  {(session.user as any)?.role === 'CLIENT' ? 'Client' : 'Freelancer'}
+                  {session.user.role === 'CLIENT' ? 'Client' : 'Freelancer'}
                 </div>
               </div>
             </div>
@@ -129,11 +113,11 @@ function HomeContent() {
             <nav className="space-y-2">
               <Link href="/jobs" className="block px-4 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors">📌 Browse Jobs</Link>
               <Link href="/freelancers" className="block px-4 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors">👥 Freelancers</Link>
-              {(session.user as any)?.role === 'CLIENT' && (
+              {session.user.role === 'CLIENT' && (
                 <Link href="/client/post-job" className="block px-4 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors">✏️ Post Job</Link>
               )}
               <Link href="/messages" className="block px-4 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors">💬 Messages</Link>
-              {(session.user as any)?.role === 'ADMIN' && (
+              {session.user.role === 'ADMIN' && (
                 <Link href="/admin" className="block px-4 py-2 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-colors">🛡️ Admin</Link>
               )}
             </nav>
@@ -147,12 +131,12 @@ function HomeContent() {
               Welcome back, {session.user?.name}! 👋
             </h1>
             <p className="text-neutral-600 mb-6">
-              {(session.user as any)?.role === 'CLIENT'
+              {session.user.role === 'CLIENT'
                 ? 'Ready to post a new job or check your projects?'
                 : 'Ready to find new opportunities or update your profile?'}
             </p>
             <div className="flex gap-4 flex-wrap">
-              {(session.user as any)?.role === 'CLIENT' ? (
+              {session.user.role === 'CLIENT' ? (
                 <>
                   <Link href="/client/post-job">
                     <Button variant="primary">Post a Job</Button>

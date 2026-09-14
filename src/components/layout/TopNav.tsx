@@ -7,24 +7,21 @@ import { Button } from '@/components/ui';
 
 export default function TopNav() {
   const { data: session } = useSession();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window === 'undefined') return 'light';
+    return (window.localStorage.getItem('freelanceTheme') as 'light' | 'dark' | null) || 'light';
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const savedTheme = (window.localStorage.getItem(
-      'freelanceTheme'
-    ) as 'light' | 'dark' | null) || 'light';
-    setTheme(savedTheme);
     document.body.classList.remove('theme-light', 'theme-dark');
-    document.body.classList.add(`theme-${savedTheme}`);
-  }, []);
+    document.body.classList.add(`theme-${theme}`);
+    window.localStorage.setItem('freelanceTheme', theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
-    document.body.classList.remove('theme-light', 'theme-dark');
-    document.body.classList.add(`theme-${nextTheme}`);
-    window.localStorage.setItem('freelanceTheme', nextTheme);
   };
 
   return (

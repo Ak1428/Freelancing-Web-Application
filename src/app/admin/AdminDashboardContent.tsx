@@ -8,7 +8,7 @@ interface Profile {
   id: string;
   userId: string;
   user: {
-    name: string;
+    name: string | null;
   };
   category: string;
   riskScore: number;
@@ -96,7 +96,7 @@ export default function AdminDashboardContent({ initialProfiles }: AdminDashboar
                 return (
                   <tr key={profile.id} className="hover:bg-neutral-50 transition-colors">
                     <td className="px-6 py-4 text-sm font-medium text-neutral-900">
-                      {profile.user.name}
+                      {profile.user.name ?? 'Unknown'}
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <Badge variant="primary">{profile.category}</Badge>

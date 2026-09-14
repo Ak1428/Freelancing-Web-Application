@@ -9,16 +9,6 @@ interface JobApplicationButtonProps {
 }
 
 export default function JobApplicationButton({ jobId, jobTitle }: JobApplicationButtonProps) {
-  // Validate jobId
-  if (!jobId || typeof jobId !== 'string') {
-    console.error('Invalid jobId prop:', jobId);
-    return (
-      <Button variant="secondary" size="lg" fullWidth disabled>
-        Invalid Job ID
-      </Button>
-    );
-  }
-
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +58,15 @@ export default function JobApplicationButton({ jobId, jobTitle }: JobApplication
       setIsLoading(false);
     }
   };
+
+  if (!jobId || typeof jobId !== 'string') {
+    console.error('Invalid jobId prop:', jobId);
+    return (
+      <Button variant="secondary" size="lg" fullWidth disabled>
+        Invalid Job ID
+      </Button>
+    );
+  }
 
   if (!isOpen) {
     return (

@@ -118,7 +118,7 @@ export async function GET(req: Request) {
     const overallRating = totalScore / 20;
 
     // Risk assessment
-    let riskFactors: string[] = [];
+    const riskFactors: string[] = [];
     if (profile.isSuspicious) {
       riskFactors.push(`High risk profile (score: ${profile.riskScore}%)`);
     }

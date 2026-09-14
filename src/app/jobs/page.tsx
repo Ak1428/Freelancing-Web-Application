@@ -4,9 +4,17 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Container, Card, Badge, Button } from '@/components/ui';
 
+type JobRecord = {
+  id: string;
+  title: string;
+  budget: number;
+  requiredSkills?: string | string[];
+  createdAt?: string;
+};
+
 export default function JobsBrowser() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -29,10 +37,15 @@ export default function JobsBrowser() {
     loadJobs();
   }, []);
 
-  const filteredJobs = (jobs || []).filter(job => 
-    (job.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || 
-    (JSON.parse(job.requiredSkills || '[]') as string[]).some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredJobs = (jobs || []).filter(job => {
+    const titleMatch = (job.title || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const skills = Array.isArray(job.requiredSkills)
+      ? job.requiredSkills
+      : JSON.parse(job.requiredSkills || '[]') as string[];
+
+    const skillMatch = skills.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+    return titleMatch || skillMatch;
+  });
 
   return (
     <Container className="py-12">
@@ -80,17 +93,24 @@ export default function JobsBrowser() {
                 {filteredJobs.map((job) => (
                   <Card key={job.id} className="p-6 hover:shadow-lg transition-shadow">
                     <div className="space-y-4">
+                      {(() => {
+                        const skills = Array.isArray(job.requiredSkills)
+                          ? job.requiredSkills
+                          : JSON.parse(job.requiredSkills || '[]') as string[];
+
+                        return (
+                          <>
                       <div>
                         <h2 className="text-xl font-semibold text-neutral-900 mb-2">{job.title}</h2>
                         <p className="text-2xl font-bold text-primary-600">${job.budget}</p>
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        {JSON.parse(job.requiredSkills || '[]').slice(0, 3).map((skill: string) => (
+                        {skills.slice(0, 3).map((skill: string) => (
                           <Badge key={skill} variant="primary">{skill}</Badge>
                         ))}
-                        {JSON.parse(job.requiredSkills || '[]').length > 3 && (
-                          <Badge variant="accent">+{JSON.parse(job.requiredSkills || '[]').length - 3} more</Badge>
+                        {skills.length > 3 && (
+                          <Badge variant="accent">+{skills.length - 3} more</Badge>
                         )}
                       </div>
 
@@ -102,6 +122,9 @@ export default function JobsBrowser() {
                           <Button variant="primary" size="sm">View & Apply</Button>
                         </Link>
                       </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </Card>
                 ))}
@@ -109,7 +132,7 @@ export default function JobsBrowser() {
             ) : (
               <div className="text-center py-12">
                 <div className="text-5xl mb-3">🔍</div>
-                <p className="text-lg text-neutral-600">No jobs found matching "{searchTerm}"</p>
+                <p className="text-lg text-neutral-600">No jobs found matching &quot;{searchTerm}&quot;</p>
               </div>
             )}
           </>

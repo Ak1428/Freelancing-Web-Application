@@ -1,31 +1,46 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
-import type { JWT } from "next-auth/jwt";
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
+import type { JWT } from 'next-auth/jwt';
 
 export default withAuth(
   function middleware(req) {
-    // Check for admin-only routes
-    if (req.nextUrl.pathname.startsWith('/admin')) {
+    const pathname = req.nextUrl.pathname;
+
+    if (pathname.startsWith('/admin')) {
       const token = req.nextauth.token as JWT & { role?: string };
-      
+
       if (token?.role !== 'ADMIN') {
-        // Redirect to home page if not admin
-        return NextResponse.redirect(new URL('/', req.url));
+        return NextResponse.redirect(new URL('/login', req.url));
       }
     }
+
+    if (pathname.startsWith('/client') || pathname.startsWith('/freelancer') || pathname.startsWith('/dashboard') || pathname.startsWith('/messages')) {
+      const token = req.nextauth.token as JWT & { role?: string };
+      if (!token) {
+        return NextResponse.redirect(new URL('/login', req.url));
+      }
+    }
+
     return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Allow access to homepage, login, and register pages
-        if (req.nextUrl.pathname === '/' ||
-            req.nextUrl.pathname === '/login' ||
-            req.nextUrl.pathname === '/register') {
+        const pathname = req.nextUrl.pathname;
+
+        if (pathname === '/' || pathname === '/login' || pathname === '/register') {
           return true;
         }
-        // Require authentication for all other pages
-        return !!token;
+
+        if (pathname.startsWith('/admin')) {
+          return !!token && token.role === 'ADMIN';
+        }
+
+        if (pathname.startsWith('/client') || pathname.startsWith('/freelancer') || pathname.startsWith('/dashboard') || pathname.startsWith('/messages')) {
+          return !!token;
+        }
+
+        return true;
       },
     },
   }
@@ -33,6 +48,11 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/((?!api/auth|api/public|_next/static|_next/image|favicon.ico).*)',
+    '/admin/:path*',
+    '/client/:path*',
+    '/dashboard/:path*',
+    '/freelancer/:path*',
+    '/messages/:path*',
+    '/profile/:path*',
   ],
 };

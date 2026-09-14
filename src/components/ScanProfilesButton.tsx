@@ -7,9 +7,15 @@ interface ScanProfilesButtonProps {
   onScanComplete?: () => void;
 }
 
+type ScanResult = {
+  scannedCount: number;
+  suspiciousCount: number;
+  flaggedProfiles: Array<{ profileId: string; userName: string; riskScore: number }>;
+};
+
 export default function ScanProfilesButton({ onScanComplete }: ScanProfilesButtonProps) {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState('');
 
   const handleScan = async () => {
@@ -54,11 +60,11 @@ export default function ScanProfilesButton({ onScanComplete }: ScanProfilesButto
           <div className="text-sm text-blue-800 space-y-1">
             <p>✓ Scanned: <strong>{result.scannedCount}</strong> profiles</p>
             <p>⚠️ Flagged: <strong>{result.suspiciousCount}</strong> suspicious profiles</p>
-            {result.flaggedProfiles?.length > 0 && (
+            {result.flaggedProfiles.length > 0 && (
               <div className="mt-3 p-2 bg-white rounded border border-blue-100">
                 <p className="font-medium mb-2">Recently Flagged:</p>
                 <ul className="space-y-1">
-                  {result.flaggedProfiles.slice(0, 5).map((profile: any) => (
+                  {result.flaggedProfiles.slice(0, 5).map((profile) => (
                     <li key={profile.profileId} className="text-xs">
                       • {profile.userName} ({profile.riskScore}% risk)
                     </li>

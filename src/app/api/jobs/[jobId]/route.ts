@@ -31,7 +31,13 @@ export async function GET(_req: Request, { params }: Params) {
 
     return NextResponse.json({
       success: true,
-      job
+      job: {
+        ...job,
+        client: {
+          id: job.client.id,
+          name: job.client.name,
+        },
+      },
     });
   } catch (error) {
     console.error('Error fetching job by id:', error);

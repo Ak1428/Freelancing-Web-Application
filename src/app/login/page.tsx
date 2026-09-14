@@ -14,14 +14,15 @@ function LogInForm() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const registered = searchParams.get('registered') === 'true';
+  const authError = searchParams.get('error');
+  const initialMessage = registered ? 'Registration successful! Please log in.' : '';
+  const initialError = authError ? 'Invalid email or password' : '';
+
   useEffect(() => {
-    if (searchParams.get('registered') === 'true') {
-      setMessage('Registration successful! Please log in.');
-    }
-    if (searchParams.get('error')) {
-      setError('Invalid email or password');
-    }
-  }, [searchParams]);
+    if (initialMessage) setMessage(initialMessage);
+    if (initialError) setError(initialError);
+  }, [initialMessage, initialError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +109,7 @@ function LogInForm() {
         </form>
 
         <p className="text-center text-sm text-neutral-600 mt-6">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-primary-600 font-medium hover:text-primary-700">
             Sign up
           </Link>
