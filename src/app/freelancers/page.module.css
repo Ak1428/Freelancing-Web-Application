@@ -1,0 +1,191 @@
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 6rem);
+}
+
+
+.glassCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius);
+  padding: 2rem;
+  width: min(100%, 960px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  color: #030303;
+}
+
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #FF0000 !important;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.subtitle {
+  color: #606060;
+  margin-bottom: 1rem;
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ctaWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ctaBtn {
+  background: #FF0000;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.6rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ctaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 0, 0, 0.2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.freelancerCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.freelancerCard h3 {
+  color: #030303;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.freelancerCard p {
+  color: #606060;
+  font-size: 0.95rem;
+  margin: 0.35rem 0;
+}
+
+.freelancerCard a {
+  color: #FF0000;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.freelancerCard a:hover {
+  color: #CC0000;
+}
+
+.freelancerCard:hover {
+  transform: translateY(-3px);
+  border-color: #FF0000;
+  box-shadow: 0 8px 24px rgba(255, 0, 0, 0.15);
+}
+
+.profileSection p,
+.skills,
+.cta {
+  color: #606060;
+  margin: 0.35rem 0;
+}
+
+.skillList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.skillBadge {
+  background: rgba(255, 0, 0, 0.1);
+  color: #FF0000;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.ctaGroup {
+  margin-top: 1.2rem;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  margin-right: 0.75rem;
+  margin-top: 0.75rem;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.cta {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.primaryBtn {
+  background: #FF0000;
+  color: white;
+}
+
+.primaryBtn:hover {
+  background: #CC0000;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.secondaryBtn {
+  background: rgba(0, 0, 0, 0.05);
+  color: #606060;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.error {
+  color: #dc2626;
+  padding: 1rem;
+  background: rgba(220, 38, 38, 0.1);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+
