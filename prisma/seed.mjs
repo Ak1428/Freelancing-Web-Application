@@ -603,7 +603,7 @@ async function main() {
   console.log(`Applications: ${applicationCount}`);
   console.log(`Portfolio projects: ${portfolioCount}`);
   console.log('\nDemo accounts:');
-  console.log('- admin@example.com / admin123');
+  console.log('- admin@example.com / Demo@12345');
   console.log('- techstart.demo@example.com / Demo@12345');
   console.log('- ecommerce.demo@example.com / Demo@12345');
   console.log('- datacorp.demo@example.com / Demo@12345');
